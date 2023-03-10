@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class moveBlock : MonoBehaviour {
 
+	//public int cubeName;
+	public GameObject myTag;
 	private float moveDistance = 3.0f;
 	private float moveDirX = 0;
 	private float moveDirY = 0;
@@ -14,16 +16,9 @@ public class moveBlock : MonoBehaviour {
 	//=======================
 	private bool myTerritory;
 
-	//void Start() {  }
+	void Start() { myTag.SetActive(false); }
 
-	void Update() {
-		if (Input.GetKeyDown(KeyCode.LeftArrow)) { BlockMoveActive(5); }
-		if (Input.GetKeyDown(KeyCode.RightArrow)) { BlockMoveActive(6); }
-		if (Input.GetKeyDown(KeyCode.UpArrow)) { BlockMoveActive(3); }
-		if (Input.GetKeyDown(KeyCode.DownArrow)) { BlockMoveActive(4); }
-		if (Input.GetKeyDown(KeyCode.A)) { BlockMoveActive(1); }
-		if (Input.GetKeyDown(KeyCode.Z)) { BlockMoveActive(2); }
-	}
+	public void ShowMyName (bool on) { if (on) { myTag.SetActive(true); } else { myTag.SetActive(false); } }
 
 	void CheckMyTerritory() {
 		RaycastHit hit;
