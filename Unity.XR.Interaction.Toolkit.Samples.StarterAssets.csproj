@@ -56,11 +56,11 @@
     <Analyzer Include="/Applications/Visual Studio.app/Contents/MonoBundle/Addins/MonoDevelop.Unity/Analyzers/Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets/Samples/XR Interaction Toolkit/2.2.0/Starter Assets/Scripts/DynamicMoveProvider.cs" />
-    <Compile Include="Assets/Samples/XR Interaction Toolkit/2.2.0/Starter Assets/Scripts/ActionBasedControllerManager.cs" />
+    <Compile Include="Assets/etc/Samples/XR Interaction Toolkit/2.2.0/Starter Assets/Scripts/DynamicMoveProvider.cs" />
+    <Compile Include="Assets/etc/Samples/XR Interaction Toolkit/2.2.0/Starter Assets/Scripts/ActionBasedControllerManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets/Samples/XR Interaction Toolkit/2.2.0/Starter Assets/Unity.XR.Interaction.Toolkit.Samples.StarterAssets.asmdef" />
+    <None Include="Assets/etc/Samples/XR Interaction Toolkit/2.2.0/Starter Assets/Unity.XR.Interaction.Toolkit.Samples.StarterAssets.asmdef" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
