@@ -2,23 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class moveBlock : MonoBehaviour {
+public class moveCrane : MonoBehaviour {
 
+	public Transform pivotY, pivoyZ;
 	//public int cubeName;
-	public GameObject myTag;
+	//public GameObject myTag;
 	private float moveDistance = 3.0f;
-	private float moveDirX = 0;
-	private float moveDirY = 0;
-	private float moveDirZ = 0;
-	private Vector3 TargetPosition, myPosition;
+	private float rotAngle = 90f;
+	private float moveDirX, moveDirY, moveDirZ, rotDirY, rotDirZ = 0;
+	private Vector3 targetPos, myPos;
+	private Transform targetRot, myRot;
 	private bool PVoverlap = true;
+
 
 	//=======================
 	private bool myTerritory;
 
-	void Start() { myTag.SetActive(false); }
+	//void Start() { myTag.SetActive(false); }
 
-	public void ShowMyName (bool on) { if (on) { myTag.SetActive(true); } else { myTag.SetActive(false); } }
+	//public void ShowMyName (bool on) { if (on) { myTag.SetActive(true); } else { myTag.SetActive(false); } }
 
 	void CheckMyTerritory() {
 		RaycastHit hit;
@@ -32,59 +34,97 @@ public class moveBlock : MonoBehaviour {
 		}
 	}
 
+
 	//==============================================================
 	public void BlockMoveActive(int newDirection) {
 		// 1 : Y+,  2 : Y-,  3 : X+,  4 : X-,  5 : Z+,  6 : Z-
-		myPosition = this.transform.position;
+		myPos = this.transform.position;
+		moveDirY = moveDirX = moveDirZ = 0;
 
 		if (newDirection == 1) { PVoverlap = false;
 			moveDirY = moveDirY + moveDistance;
 			StartCoroutine(MovePosition());
-			newDirection = 0;
 		}
 		else if (newDirection == 2) { PVoverlap = false;
 			moveDirY = moveDirY - moveDistance;
 			StartCoroutine(MovePosition());
-			newDirection = 0;
 		}
 		else if (newDirection == 3) { PVoverlap = false;
 			moveDirX = moveDirX + moveDistance;
 			StartCoroutine(MovePosition());
-			newDirection = 0;
 		}
 		else if (newDirection == 4) { PVoverlap = false;
 			moveDirX = moveDirX - moveDistance;
 			StartCoroutine(MovePosition());
-			newDirection = 0;
 		}
 		else if (newDirection == 5) { PVoverlap = false;
 			moveDirZ = moveDirZ + moveDistance;
 			StartCoroutine(MovePosition());
-			newDirection = 0;
 		}
 		else if (newDirection == 6) { PVoverlap = false;
 			moveDirZ = moveDirZ - moveDistance;
 			StartCoroutine(MovePosition());
-			newDirection = 0;
 		}
 	}
 
 	private float percent, activeTime = 0;
 
 	IEnumerator MovePosition() {
-		TargetPosition = new Vector3(myPosition.x + moveDirX, myPosition.y + moveDirY, myPosition.z + moveDirZ);
+		targetPos = new Vector3(myPos.x + moveDirX, myPos.y + moveDirY, myPos.z + moveDirZ);
 		while (percent < 1) {
 			activeTime += Time.smoothDeltaTime;
-			percent = activeTime * 10.0f;
-			this.transform.position = Vector3.Lerp(this.transform.position, TargetPosition, 7.0f * Time.smoothDeltaTime);
+			percent = activeTime * 3.0f;
+			this.transform.position = Vector3.Lerp(this.transform.position, targetPos, 6.0f * Time.smoothDeltaTime);
 			yield return null;
 		}
 		if (percent >= 1) {
 			//CheckRightPosition();
 			moveDirX = moveDirY = moveDirZ = 0;
 			activeTime = percent = 0;
-			this.transform.position = TargetPosition;
-			myPosition = this.transform.position;
+			this.transform.position = targetPos;
+			myPos = this.transform.position;
+		}
+	}
+
+
+	//==============================================================
+	public void BlockRotateActive(int newRotation) {
+		// 1 : Y+,  2 : Y-,  3 : Z+,  4 : Z-
+		rotDirY = rotDirZ = 0;
+		if (newRotation == 1) { PVoverlap = false;
+			rotDirY = rotDirY + rotAngle;
+			StartCoroutine(MoveRotation());
+		}
+		else if (newRotation == 2) { PVoverlap = false;
+			//moveDirY = moveDirY - moveDistance;
+			StartCoroutine(MoveRotation());
+		}
+		else if (newRotation == 3) { PVoverlap = false;
+			rotDirZ = rotDirZ + rotAngle;
+			StartCoroutine(MoveRotation());
+		}
+		else if (newRotation == 4) { PVoverlap = false;
+			//moveDirX = moveDirX - moveDistance;
+			StartCoroutine(MoveRotation());
+		}
+	}
+
+	private float percent2, activeTime2 = 0;
+
+	IEnumerator MoveRotation() {
+		targetRot.rotation = Quaternion.Euler(0, rotDirY, rotDirZ);
+		while (percent2 < 1) {
+			activeTime2 += Time.smoothDeltaTime;
+			percent2 = activeTime2 * 3.0f;
+			//this.transform.rotation = Quaternion.Lerp(this.transform.position, targetPos, 6.0f * Time.smoothDeltaTime);
+			yield return null;
+		}
+		if (percent2 >= 1) {
+			//CheckRightPosition();
+			moveDirX = moveDirY = moveDirZ = 0;
+			activeTime2 = percent2 = 0;
+			this.transform.position = targetPos;
+			myPos = this.transform.position;
 		}
 	}
 
