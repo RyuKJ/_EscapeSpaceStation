@@ -10,10 +10,8 @@ public class moveCrane : MonoBehaviour {
 	private float moveDistance = 3.0f;
 	private float rotAngle = 90f;
 	private float moveDirX, moveDirY, moveDirZ, rotDirY, rotDirZ = 0;
-	private Vector3 targetPos, myPos;
-	private Transform targetRot, myRot;
+	public Vector3 targetPos, myPos, targetRot;
 	private bool PVoverlap = true;
-
 
 	//=======================
 	private bool myTerritory;
@@ -83,7 +81,8 @@ public class moveCrane : MonoBehaviour {
 			activeTime = percent = 0;
 			this.transform.position = targetPos;
 			myPos = this.transform.position;
-		}
+			PVoverlap = true;
+        }
 	}
 
 
@@ -112,20 +111,20 @@ public class moveCrane : MonoBehaviour {
 	private float percent2, activeTime2 = 0;
 
 	IEnumerator MoveRotation() {
-		targetRot.rotation = Quaternion.Euler(0, rotDirY, rotDirZ);
-		while (percent2 < 1) {
+		targetRot = new Vector3(0, rotDirY, rotDirZ); // Quaternion.Euler(0, rotDirY, rotDirZ);
+
+        while (percent2 < 1) {
 			activeTime2 += Time.smoothDeltaTime;
 			percent2 = activeTime2 * 3.0f;
-			//this.transform.rotation = Quaternion.Lerp(this.transform.position, targetPos, 6.0f * Time.smoothDeltaTime);
+			this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(targetRot), 6.0f * Time.smoothDeltaTime);
 			yield return null;
 		}
 		if (percent2 >= 1) {
-			//CheckRightPosition();
-			moveDirX = moveDirY = moveDirZ = 0;
+            rotDirY = rotDirZ = 0;
 			activeTime2 = percent2 = 0;
-			this.transform.position = targetPos;
-			myPos = this.transform.position;
-		}
+			this.transform.rotation = Quaternion.Euler(targetRot);
+            PVoverlap = true;
+        }
 	}
 
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class testScript : MonoBehaviour {
 
-    public int currentSelectCubeNumber;
+    //public int currentSelectCubeNumber;
     public moveCrane mc;
 
     void Update() {

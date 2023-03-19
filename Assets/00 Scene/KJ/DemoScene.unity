@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -478,8 +478,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d7fb6a7146f98a4bac15fa5a79a7036, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pivotY: {fileID: 0}
-  pivoyZ: {fileID: 0}
+  pivotY: {fileID: 1769942365}
+  pivoyZ: {fileID: 1134411660}
+  targetPos: {x: 0, y: 0, z: 0}
+  myPos: {x: 0, y: 0, z: 0}
+  targetRot: {fileID: 0}
+  myRot: {fileID: 0}
 --- !u!1 &235184210
 GameObject:
   m_ObjectHideFlags: 0
@@ -1307,7 +1311,7 @@ BoxCollider:
   m_GameObject: {fileID: 559638170}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -2703,7 +2707,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18f9654f9cdd1da42a879b99ad61a8fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentSelectCubeNumber: 0
   mc: {fileID: 227344369}
 --- !u!1 &1202312658
 GameObject:
@@ -3076,7 +3079,7 @@ CapsuleCollider:
   m_GameObject: {fileID: 1365209830}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   m_Radius: 0.5000001
   m_Height: 2
   m_Direction: 1
@@ -3485,7 +3488,7 @@ BoxCollider:
   m_GameObject: {fileID: 1607460966}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
