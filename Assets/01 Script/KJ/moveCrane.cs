@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class moveCrane : MonoBehaviour {
 
-	public Transform pivotY, pivoyZ;
+	public Transform gripPivotY, cranePivotZ;
 	//public int cubeName;
 	//public GameObject myTag;
 	private float moveDistance = 3.0f;
 	private float rotAngle = 90f;
-	private float moveDirX, moveDirY, moveDirZ, rotDirY, rotDirZ = 0;
-	public Vector3 targetPos, myPos, targetRot;
+	private float moveDirX, moveDirY, moveDirZ, targetRotDirY, targetRotDirZ;
+	//public Quaternion  // targetRot, currentRot
+    private Vector3 targetPos, myPos;
 	private bool PVoverlap = true;
 
 	//=======================
@@ -72,8 +73,8 @@ public class moveCrane : MonoBehaviour {
 		while (percent < 1) {
 			activeTime += Time.smoothDeltaTime;
 			percent = activeTime * 3.0f;
-			this.transform.position = Vector3.Lerp(this.transform.position, targetPos, 6.0f * Time.smoothDeltaTime);
-			yield return null;
+            this.transform.position = Vector3.Lerp(this.transform.position, targetPos, 6.0f * Time.smoothDeltaTime);
+            yield return null;
 		}
 		if (percent >= 1) {
 			//CheckRightPosition();
@@ -85,44 +86,63 @@ public class moveCrane : MonoBehaviour {
         }
 	}
 
+	private int whichAxis; // 1 : y, 2 : z
 
 	//==============================================================
 	public void BlockRotateActive(int newRotation) {
-		// 1 : Y+,  2 : Y-,  3 : Z+,  4 : Z-
-		rotDirY = rotDirZ = 0;
-		if (newRotation == 1) { PVoverlap = false;
-			rotDirY = rotDirY + rotAngle;
-			StartCoroutine(MoveRotation());
+        // 1 : Y+,  2 : Y-,  3 : Z+,  4 : Z-
+
+        if (newRotation == 1) { PVoverlap = false; // y로 상정중
+            whichAxis = 1;
+			targetRotDirY = targetRotDirY + 90.0f;
+            //Quaternion.AngleAxis(90, Vector3.right);
+            //currentRot = Quaternion.Euler(gripSomething.rotation.x, gripSomething.rotation.y, gripSomething.rotation.z);
+            //targetRotDirY.y = targetRotDirY.y + rotAngle;
+            StartCoroutine(AxisRotation());
 		}
 		else if (newRotation == 2) { PVoverlap = false;
-			//moveDirY = moveDirY - moveDistance;
-			StartCoroutine(MoveRotation());
+			
+			StartCoroutine(AxisRotation());
 		}
-		else if (newRotation == 3) { PVoverlap = false;
-			rotDirZ = rotDirZ + rotAngle;
-			StartCoroutine(MoveRotation());
+		else if (newRotation == 3) { PVoverlap = false; // z로 상정중
+            whichAxis = 2;
+            targetRotDirZ = targetRotDirZ + 90.0f;
+            //targetRotDirZ = Quaternion.AngleAxis(90, Vector3.forward);
+            //targetRotDirZ.z = targetRotDirZ.z + rotAngle;
+            StartCoroutine(AxisRotation());
 		}
 		else if (newRotation == 4) { PVoverlap = false;
-			//moveDirX = moveDirX - moveDistance;
-			StartCoroutine(MoveRotation());
+			
+			StartCoroutine(AxisRotation());
 		}
 	}
 
-	private float percent2, activeTime2 = 0;
+	private float percent2, activeTime2, currtRotY, currtRotZ = 0;
 
-	IEnumerator MoveRotation() {
-		targetRot = new Vector3(0, rotDirY, rotDirZ); // Quaternion.Euler(0, rotDirY, rotDirZ);
+	IEnumerator AxisRotation() {
+        //targetRot = new Vector3(0, targetRotDirY, targetRotDirZ); // Quaternion.Euler(0, targetRotDirY, targetRotDirZ);
+        //currentRot = new Vector3(this.transform.rotation.x, this.transform.rotation.y, this.transform.rotation.z);
 
         while (percent2 < 1) {
 			activeTime2 += Time.smoothDeltaTime;
 			percent2 = activeTime2 * 3.0f;
-			this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(targetRot), 6.0f * Time.smoothDeltaTime);
-			yield return null;
+			if (whichAxis == 1) {
+				currtRotY = Mathf.Lerp(currtRotY, targetRotDirY, 6.0f * Time.smoothDeltaTime);
+				gripPivotY.localRotation = Quaternion.Euler(gripPivotY.localRotation.x, currtRotY, gripPivotY.localRotation.z); }
+			else if (whichAxis == 2) {
+                currtRotZ = Mathf.Lerp(currtRotZ, targetRotDirZ, 6.0f * Time.smoothDeltaTime);
+                cranePivotZ.localRotation = Quaternion.Euler(cranePivotZ.localRotation.x, cranePivotZ.localRotation.y, currtRotZ); }
+            yield return null;
 		}
 		if (percent2 >= 1) {
-            rotDirY = rotDirZ = 0;
 			activeTime2 = percent2 = 0;
-			this.transform.rotation = Quaternion.Euler(targetRot);
+            if (whichAxis == 1) { gripPivotY.localRotation = Quaternion.Euler(gripPivotY.localRotation.x, targetRotDirY, gripPivotY.localRotation.z); }
+            else if (whichAxis == 2) { cranePivotZ.localRotation = Quaternion.Euler(cranePivotZ.localRotation.x, cranePivotZ.localRotation.y, targetRotDirZ); }
+
+            if (currtRotY >= 360.0f) { currtRotY = 0; }
+            if (currtRotZ >= 360.0f) { currtRotZ = 0; }
+            if (targetRotDirY >= 360.0f) { targetRotDirY = 0; }
+            if (targetRotDirZ >= 360.0f) { targetRotDirZ = 0; }
             PVoverlap = true;
         }
 	}

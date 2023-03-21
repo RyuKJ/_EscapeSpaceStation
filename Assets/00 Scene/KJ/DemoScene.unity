@@ -441,7 +441,7 @@ GameObject:
   - component: {fileID: 227344368}
   - component: {fileID: 227344369}
   m_Layer: 0
-  m_Name: Crane
+  m_Name: CranePivot_Z
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -478,12 +478,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d7fb6a7146f98a4bac15fa5a79a7036, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pivotY: {fileID: 1769942365}
-  pivoyZ: {fileID: 1134411660}
-  targetPos: {x: 0, y: 0, z: 0}
-  myPos: {x: 0, y: 0, z: 0}
-  targetRot: {fileID: 0}
-  myRot: {fileID: 0}
+  gripPivotY: {fileID: 1769942365}
+  cranePivotZ: {fileID: 227344368}
 --- !u!1 &235184210
 GameObject:
   m_ObjectHideFlags: 0
@@ -2638,7 +2634,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1134411660}
   m_Layer: 0
-  m_Name: armPivot_Z
+  m_Name: arm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3586,7 +3582,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1769942365}
   m_Layer: 0
-  m_Name: mainPivot_Y
+  m_Name: gripPivot_Y
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
