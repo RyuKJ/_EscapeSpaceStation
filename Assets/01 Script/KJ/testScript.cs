@@ -11,6 +11,7 @@ public class testScript : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Q)) { mc.BlockRotateActive(1); }
         if (Input.GetKeyDown(KeyCode.W)) { mc.BlockRotateActive(3); }
+        if (Input.GetKeyDown(KeyCode.E)) { mc.DetachAttachModule(); }
 
         if (Input.GetKeyDown(KeyCode.LeftArrow)) { mc.BlockMoveActive(5); }
         if (Input.GetKeyDown(KeyCode.RightArrow)) { mc.BlockMoveActive(6); }
