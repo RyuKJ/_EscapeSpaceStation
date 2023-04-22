@@ -10,11 +10,11 @@ public class testScript : MonoBehaviour {
 
     void Update() {
 
-        if (Input.GetKeyDown(KeyCode.Q)) { mc.BlockRotateActive(1); }
-        if (Input.GetKeyDown(KeyCode.W)) { mc.BlockRotateActive(3); }
-        if (Input.GetKeyDown(KeyCode.E)) { mc.DetachAttachModule(); }
-
         if (mc.PVoverlap == true) {
+            if (Input.GetKeyDown(KeyCode.Q)) { mc.BlockRotateActive(1); }
+            if (Input.GetKeyDown(KeyCode.W)) { mc.BlockRotateActive(3); }
+            if (Input.GetKeyDown(KeyCode.E)) { mc.DetachAttachModule(); }
+        
             if (Input.GetKeyDown(KeyCode.LeftArrow)) { gp.GetDirection(4); }
             if (Input.GetKeyDown(KeyCode.RightArrow)) { gp.GetDirection(3); }
             if (Input.GetKeyDown(KeyCode.UpArrow)) { gp.GetDirection(5); }

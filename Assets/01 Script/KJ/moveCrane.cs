@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class moveCrane : MonoBehaviour {
 
-	public Transform gripPivotY, cranePivotZ, detachSpot, sensorPos, targetPos;
+	public Transform gripPivotY, cranePivotZ, detachSpot, sensorPos, targetPos, originPos;
     public bool PVoverlap = true;
 
     private float moveDirX, moveDirY, moveDirZ, targetRotDirY, targetRotDirZ, currtRotY, currtRotZ;
@@ -16,9 +16,10 @@ public class moveCrane : MonoBehaviour {
 
 
     //=======================
-    //void Start() { myTag.SetActive(false); }
+	/*
+	void Start() { myTag.SetActive(false); }
 
-    //public void ShowMyName (bool on) { if (on) { myTag.SetActive(true); } else { myTag.SetActive(false); } }
+    public void ShowMyName (bool on) { if (on) { myTag.SetActive(true); } else { myTag.SetActive(false); } }
 
     private bool myTerritory;
 
@@ -33,43 +34,13 @@ public class moveCrane : MonoBehaviour {
 			}
 		}
 	}
-
+	*/
 
 	//==============================================================
 	public void BlockMoveActive(Transform target) {
 		// 1 : Y+,  2 : Y-,  3 : X+,  4 : X-,  5 : Z+,  6 : Z-
 		targetPos = target;
 		StartCoroutine(MovePosition());
-    /*
-		moveDirY = moveDirX = moveDirZ = 0;
-
-		if (PVoverlap) {
-			if (newDirection == 1) { PVoverlap = false;
-				moveDirY = moveDirY + moveDistance;
-				StartCoroutine(MovePosition());
-			}
-			else if (newDirection == 2) { PVoverlap = false;
-				moveDirY = moveDirY - moveDistance;
-				StartCoroutine(MovePosition());
-			}
-			else if (newDirection == 3) { PVoverlap = false;
-				moveDirX = moveDirX + moveDistance;
-				StartCoroutine(MovePosition());
-			}
-			else if (newDirection == 4) { PVoverlap = false;
-				moveDirX = moveDirX - moveDistance;
-				StartCoroutine(MovePosition());
-			}
-			else if (newDirection == 5) { PVoverlap = false;
-				moveDirZ = moveDirZ + moveDistance;
-				StartCoroutine(MovePosition());
-			}
-			else if (newDirection == 6) { PVoverlap = false;
-				moveDirZ = moveDirZ - moveDistance;
-				StartCoroutine(MovePosition());
-			}
-		}
-	*/
     }
 
 	private float percent, activeTime = 0;
@@ -79,7 +50,7 @@ public class moveCrane : MonoBehaviour {
 		while (percent < 1) {
 			activeTime += Time.smoothDeltaTime;
 			percent = activeTime * 3.0f;
-            this.transform.position = Vector3.Lerp(this.transform.position, targetPos.position, 6.0f * Time.smoothDeltaTime);
+            this.transform.position = Vector3.Lerp(this.transform.position, targetPos.position, 6.0f * (1 + percent) * Time.smoothDeltaTime);
             yield return null;
 		}
 		if (percent >= 1) {
@@ -159,23 +130,57 @@ public class moveCrane : MonoBehaviour {
     public void DetachAttachModule() {
 		Debug.DrawRay(sensorPos.position, sensorPos.forward * detectLine, Color.red, 0.5f);
         if (Physics.Raycast(sensorPos.position, sensorPos.forward, out hitSensor, detectLine)) {
-			if (!hitSensor.collider.CompareTag("Modules")) return;
+			if (!hitSensor.collider.CompareTag("Modules")) { Debug.Log("it's not module"); return; }
 
 			if (!holding && hitSensor.collider.CompareTag("Modules")) { holding = true;
                 Debug.Log("attach");
                 hitSensor.collider.gameObject.transform.parent.parent = gripPivotY;
+				originPos = hitSensor.collider.gameObject.transform.parent.transform;
             }
 			else if (holding && hitSensor.collider.CompareTag("Modules")) { holding = false;
 				Debug.Log("detach");
+                //PositionCorrectionSystem();
                 gripPivotY.GetChild(0).gameObject.transform.parent = detachSpot;
+
+
+				// 기존 localTransform을 어떻게 저장하고 어느 순간에 붙여야할지 연구 필요
+                gripPivotY.GetChild(0).gameObject.transform.parent.transform.localPosition = originPos.localPosition;
+                gripPivotY.GetChild(0).gameObject.transform.parent.transform.localRotation = originPos.localRotation;
+                gripPivotY.GetChild(0).gameObject.transform.parent.transform.localScale = originPos.localScale;
+
+
+                
+                //gripPivotY.localRotation = Quaternion.Euler(0, 0, 0);
             }
 		}
 	}
 
+
+	// 이게 해결책이 아닐 수 있음
+	private float cRv_X, cRv_Y, cRv_Z;//, cPv_X, cPv_Y, cPv_Z;
+
+    void PositionCorrectionSystem() {
+		gripPivotY.GetChild(0).gameObject.transform.parent.localScale = new Vector3(1, 1, 1);
+
+		gripPivotY.GetChild(0).gameObject.transform.parent.localPosition = targetPos.position;
+
+        cRv_X = gripPivotY.GetChild(0).gameObject.transform.parent.localRotation.x;
+        cRv_Y = gripPivotY.GetChild(0).gameObject.transform.parent.localRotation.y;
+        cRv_Z = gripPivotY.GetChild(0).gameObject.transform.parent.localRotation.z;
+
+			 if (cRv_X > 0 && cRv_X < 45) { cRv_X = 0; }		else if (cRv_X > 45 && cRv_X < 90) { cRv_X = 90; }
+        else if (cRv_X > 90 && cRv_X < 135) { cRv_X = 90; }		else if (cRv_X > 135 && cRv_X < 180) { cRv_X = 180; }
+        else if (cRv_X > 180 && cRv_X < 225) { cRv_X = 180; }	else if (cRv_X > 225 && cRv_X < 270) { cRv_X = 270; }
+        else if (cRv_X > 270 && cRv_X < 315) { cRv_X = 270; }	else if (cRv_X > 315 && cRv_X <= 360) { cRv_X = 0; }
+
+    }
+
+
     //private void OnTriggerStay(Collider other) { }
 
 
-	//==============================================================
+    //==============================================================
+    /*
 	void CheckRightPosition() {
 		RaycastHit hit;
 		if (Physics.Raycast(this.transform.position, Vector3.forward, out hit)) {
@@ -190,5 +195,6 @@ public class moveCrane : MonoBehaviour {
 			}
 		}
 	}
+	*/
 
 }
