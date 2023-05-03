@@ -203,7 +203,7 @@ public class GridPosition : MonoBehaviour {
         currentPosZ = 1;
     }
 
-    public void GetDirection(int dir) { mc.PVoverlap = false;
+    public void GetDirection(int dir) { testScript.Instance.PVoverlap = false;
         // 1 : Y+,  2 : Y-,  3 : X+,  4 : X-,  5 : Z+,  6 : Z-
              if (dir == 1) { currentPosY++; }
         else if (dir == 2) { currentPosY--; }
@@ -213,14 +213,14 @@ public class GridPosition : MonoBehaviour {
         else if (dir == 6) { currentPosZ--; }
         else if (dir == -1) { SetDefaultPosition(); }
 
-             if (currentPosY > 5) { currentPosY = 5; mc.PVoverlap = true; return; }
-        else if (currentPosY < 1) { currentPosY = 1; mc.PVoverlap = true; return; }
+             if (currentPosY > 5) { currentPosY = 5; testScript.Instance.PVoverlap = true; return; }
+        else if (currentPosY < 1) { currentPosY = 1; testScript.Instance.PVoverlap = true; return; }
 
-             if (currentPosX > 5) { currentPosX = 5; mc.PVoverlap = true; return; }
-        else if (currentPosX < 1) { currentPosX = 1; mc.PVoverlap = true; return; }
+             if (currentPosX > 5) { currentPosX = 5; testScript.Instance.PVoverlap = true; return; }
+        else if (currentPosX < 1) { currentPosX = 1; testScript.Instance.PVoverlap = true; return; }
 
-             if (currentPosZ > 5) { currentPosZ = 5; mc.PVoverlap = true; return; }
-        else if (currentPosZ < 1) { currentPosZ = 1; mc.PVoverlap = true; return; }
+             if (currentPosZ > 5) { currentPosZ = 5; testScript.Instance.PVoverlap = true; return; }
+        else if (currentPosZ < 1) { currentPosZ = 1; testScript.Instance.PVoverlap = true; return; }
 
         CombineDirection();
     }

@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class testScript : MonoBehaviour {
 
+    public static testScript Instance;
     //public int currentSelectCubeNumber;
+    public bool PVoverlap = true;
     public moveCrane mc;
     public GridPosition gp;
 
     void Update() {
 
-        if (mc.PVoverlap == true) {
+        if (PVoverlap == true) {
             if (Input.GetKeyDown(KeyCode.Q)) { mc.BlockRotateActive(1); }
             if (Input.GetKeyDown(KeyCode.W)) { mc.BlockRotateActive(3); }
             if (Input.GetKeyDown(KeyCode.E)) { mc.DetachAttachModule(); }
