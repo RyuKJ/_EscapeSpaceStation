@@ -59,8 +59,8 @@
     <Compile Include="Assets/01 Script/KJ/moveCrane.cs" />
     <Compile Include="Assets/01 Script/KJ/turnOn.cs" />
     <Compile Include="Assets/01 Script/KJ/testScript.cs" />
-    <Compile Include="Assets/01 Script/KJ/GridPosition.cs" />
     <Compile Include="Assets/01 Script/KJ/rotateBlock.cs" />
+    <Compile Include="Assets/01 Script/KJ/GridPosition.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/etc/Sci-Fi Styled Modular Pack/Readme.txt" />

@@ -10,6 +10,8 @@ public class testScript : MonoBehaviour {
     public moveCrane mc;
     public GridPosition gp;
 
+    void Awake() { if (Instance == null) { Instance = this; } }
+
     void Update() {
 
         if (PVoverlap == true) {

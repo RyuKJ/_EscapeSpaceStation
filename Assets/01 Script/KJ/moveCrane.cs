@@ -7,7 +7,7 @@ public class moveCrane : MonoBehaviour {
 	public Transform gripPivotY, cranePivotZ, detachSpot, sensorPos, targetPos, originPos;
     
 
-    private float moveDirX, moveDirY, moveDirZ, targetRotDirY, targetRotDirZ, currtRotY, currtRotZ;
+    private float moveDirX, moveDirY, moveDirZ, targetRotDirZ, currtRotZ;
     private Vector3 myPos;
 
     // 내가 정한 수치
@@ -70,10 +70,29 @@ public class moveCrane : MonoBehaviour {
 		// 1 : Y+,  2 : Y-,  3 : Z+,  4 : Z-
 			 if (direction == 1) { robl.RotateMyself(1); }
 		else if (direction == 2) { robl.RotateMyself(2); }
-		else if (direction == 3) { robl.RotateMyself(3); }
-		else if (direction == 4) { robl.RotateMyself(4); }
+		else if (direction == 3) { robl.RotateMyself(3); StartCoroutine(CraneRotation()); }
+		else if (direction == 4) { robl.RotateMyself(4); StartCoroutine(CraneRotation()); }
 	}
 
+    private float percent2, activeTime2 = 0;
+
+	IEnumerator CraneRotation() {
+		while (percent2 < 1) {
+			activeTime2 += Time.smoothDeltaTime;
+			percent2 = activeTime2 * 2.5f;
+
+			currtRotZ = Mathf.Lerp(currtRotZ, targetRotDirZ, 5.0f * (1 + percent) * Time.smoothDeltaTime);
+			cranePivotZ.localRotation = Quaternion.Euler(cranePivotZ.localRotation.x, currtRotZ, cranePivotZ.localRotation.z);
+			robl.AxisZRotation(currtRotZ);
+            yield return null;
+		}
+		if (percent2 >= 1) { activeTime2 = percent2 = 0;
+			cranePivotZ.localRotation = Quaternion.Euler(cranePivotZ.localRotation.x, targetRotDirZ, cranePivotZ.localRotation.z);
+            robl.AxisZRotation(targetRotDirZ);
+            if (currtRotZ >= 269.9f || currtRotZ <= -269.9f) { currtRotZ = targetRotDirZ = 0; Debug.Log("crane Z calibrated");
+                cranePivotZ.localRotation = Quaternion.Euler(cranePivotZ.localRotation.x, cranePivotZ.localRotation.y + 90, 0); }
+		}
+	}
 
     //==============================================================
     private bool holding;
@@ -90,7 +109,8 @@ public class moveCrane : MonoBehaviour {
                 Debug.Log("attach");
                 //hitSensor.collider.gameObject.transform.parent.parent = gripPivotY;
                 //originPos = hitSensor.collider.gameObject.transform.parent.transform;
-                robl = hitSensor.collider.gameObject.GetComponent<rotateBlock>();
+                robl = hitSensor.collider.gameObject.transform.parent.GetComponent<rotateBlock>();
+				
             }
 			else if (holding && hitSensor.collider.CompareTag("Modules")) { holding = false;
 				Debug.Log("detach");
