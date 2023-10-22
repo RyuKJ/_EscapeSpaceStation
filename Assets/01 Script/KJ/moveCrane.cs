@@ -7,13 +7,15 @@ using UnityEngine;
 public class moveCrane : MonoBehaviour {
 
 	public Transform cranePivotZ, detachSpot, sensorPos, targetPos, originPos;
-	public float targetRotDirZ, childTargetRotDirZ, currtRotZ, localRotSaveX, localRotSaveY;//, localRotSaveZ;
+	public float targetRotDirZ, childTargetRotDirZ, currtRotZ, localRotSaveX, localRotSaveY;
+    public rotateBlock robl; // private로 수정
+	public contactSensor cs;
 
     // 내가 정한 수치
-	private float angle = 90.0f;
+    private float angle = 90.0f;
 
 	
-	void Start() { RotationValueBackup(); }
+	void Start() { RotationValueBackup(); testScript.Instance.PVoverlap = true; }
 
 
 	void RotationValueBackup() {
@@ -42,10 +44,8 @@ public class moveCrane : MonoBehaviour {
 
 	//==============================================================
 	public void BlockMoveActive(Transform target) {
-		// 1 : Y+,  2 : Y-,  3 : X+,  4 : X-,  5 : Z+,  6 : Z-
-
 		targetPos = target;
-		StartCoroutine(MovePosition());
+        StartCoroutine(MovePosition());
     }
 
 	private float percent, activeTime = 0;
@@ -67,30 +67,22 @@ public class moveCrane : MonoBehaviour {
 
 
     //==============================================================
-    public rotateBlock robl; // private로 수정
-
-    public void BlockRotateActive(int direction) { testScript.Instance.PVoverlap = false;
-		// 1 : Y+,  2 : Y-,  3 : Z+,  4 : Z-
-
-		if (robl != null && direction == 1) {
-			robl.RotateMyself(1);
-			Debug.Log("Y rot");
+    public void BlockRotateActive(int direction) {
+		if (robl != null && direction == 1) {		//Debug.Log("Y- rot");
+			robl.RotateContactPivot(1);
 		}
-		else if (robl != null && direction == 2) {
-			robl.RotateMyself(2);
-			Debug.Log("wrong 1");
+		else if (robl != null && direction == 2) {	//Debug.Log("Y+ rot");
+			robl.RotateContactPivot(2);
 		}
-		else if (direction == 3) {
-			targetRotDirZ = currtRotZ + angle;
-			StartCoroutine(CraneRotation());
-			Debug.Log("Z rot");
-		}
-		else if (direction == 4) {
+		else if (direction == 3) {					//Debug.Log("Z- rot");
 			targetRotDirZ = currtRotZ - angle;
 			StartCoroutine(CraneRotation());
-			Debug.Log("wrong 2");
 		}
-		else { Debug.Log("rotateBlock is null"); testScript.Instance.PVoverlap = true; }
+		else if (direction == 4) {					//Debug.Log("Z+ rot");
+			targetRotDirZ = currtRotZ + angle;
+			StartCoroutine(CraneRotation());
+		}
+		else { testScript.Instance.PVoverlap = true; Debug.Log("rotateBlock is null"); }
 	}
 
 
@@ -102,20 +94,20 @@ public class moveCrane : MonoBehaviour {
 			percent2 = activeTime2 * 2.5f;
 
 			currtRotZ = Mathf.Lerp(currtRotZ, targetRotDirZ, 5.0f * (1 + percent) * Time.smoothDeltaTime);
-				//cranePivotZ.localRotation = Quaternion.Euler(localRotSaveX, localRotSaveY, currtRotZ);
+			//cranePivotZ.localRotation = Quaternion.Euler(localRotSaveX, localRotSaveY, currtRotZ);
             cranePivotZ.localEulerAngles = new Vector3(localRotSaveX, localRotSaveY, currtRotZ);
 
-            if (robl != null) { robl.AxisZRotation(currtRotZ); }
+        //if (robl != null) { robl.RotateArmPivot(currtRotZ); }
             yield return null;
 		}
 		if (percent2 >= 1) { activeTime2 = percent2 = 0;
 
             //Debug.Log("before Z crane calibrate: " + cranePivotZ.localEulerAngles.x + ", " + cranePivotZ.localEulerAngles.y + ", " + targetRotDirZ);
             CalibratingCraneDegree(targetRotDirZ, 3);
-			if (robl != null) { robl.CalibratingZAxis(calibratedZ); }
+		//if (robl != null) { robl.CalibratingMyself(); }
             CalibratingCraneDegree(cranePivotZ.localEulerAngles.x, 1);
             CalibratingCraneDegree(cranePivotZ.localEulerAngles.y, 2);
-				//cranePivotZ.localRotation = Quaternion.Euler(calibratedX, calibratedY, calibratedZ);
+			//cranePivotZ.localRotation = Quaternion.Euler(calibratedX, calibratedY, calibratedZ);
             cranePivotZ.localEulerAngles = new Vector3(calibratedX, calibratedY, calibratedZ);
             //Debug.Log("calibrate Z crane done : " + calibratedX + ", " + calibratedY + ", " + calibratedZ);
             currtRotZ = calibratedZ;
@@ -158,21 +150,46 @@ public class moveCrane : MonoBehaviour {
     private bool holding;
     //private int layerMask = 1 << 8;
     private float detectLine = 0.5f;
+	public int armPivot, contactPivot; //private으로
     private RaycastHit hitSensor;
 
     public void DetachAttachModule() {
-		Debug.DrawRay(sensorPos.position, sensorPos.forward * detectLine, UnityEngine.Color.red, 0.5f);
+        Debug.DrawRay(sensorPos.position, sensorPos.forward * detectLine, UnityEngine.Color.red, 0.5f);
         if (Physics.Raycast(sensorPos.position, sensorPos.forward, out hitSensor, detectLine)) {
 			if (!hitSensor.collider.CompareTag("Modules")) { Debug.Log("this is not a module"); return; }
 
 			if (!holding && hitSensor.collider.CompareTag("Modules")) { holding = true;
-                robl = hitSensor.collider.gameObject.transform.parent.GetComponent<rotateBlock>();
+				cs.GetContactModulePivot();
+                // armPivot & contactPivot
+                // 1 : xp ( -to+, R : x- )  2 : xm ( +to-, R : x+ )
+                // 3 : yp ( -to+, R : y- )  4 : ym ( +to-, R : y+ )
+                // 5 : zp ( -to+, R : z- )  6 : zm ( +to-, R : z+ )
+					 if (hitSensor.collider.gameObject.name == "xp") { armPivot = 1; }
+				else if (hitSensor.collider.gameObject.name == "xm") { armPivot = 2; }
+                else if (hitSensor.collider.gameObject.name == "yp") { armPivot = 3; }
+                else if (hitSensor.collider.gameObject.name == "ym") { armPivot = 4; }
+                else if (hitSensor.collider.gameObject.name == "zp") { armPivot = 5; }
+                else if (hitSensor.collider.gameObject.name == "zm") { armPivot = 6; }
+				else { Debug.Log("arm collider name problem (never show)"); }
+
+					 if (cs.contactName == "xp") { contactPivot = 1; }
+                else if (cs.contactName == "xm") { contactPivot = 2; }
+                else if (cs.contactName == "yp") { contactPivot = 3; }
+                else if (cs.contactName == "ym") { contactPivot = 4; }
+                else if (cs.contactName == "zp") { contactPivot = 5; }
+                else if (cs.contactName == "zm") { contactPivot = 6; }
+                else { Debug.Log("contact collider name problem (never show)"); }
+
+                robl = hitSensor.collider.gameObject.transform.parent.parent.GetComponent<rotateBlock>();
+				robl.GetAttachPivotPoints(armPivot, contactPivot);
                 Debug.Log("attach O");
+                testScript.Instance.PVoverlap = true;
             }
 			else if (holding && hitSensor.collider.CompareTag("Modules")) { holding = false;
-                //Debug.Log("GGG");
+				robl.GetAttachPivotPoints(-1, -1);
                 robl = null;
                 Debug.Log("detach X");
+                testScript.Instance.PVoverlap = true;
             }
 		}
 	}

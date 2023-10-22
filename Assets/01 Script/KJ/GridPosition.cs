@@ -203,7 +203,7 @@ public class GridPosition : MonoBehaviour {
         currentPosZ = 1;
     }
 
-    public void GetDirection(int dir) { testScript.Instance.PVoverlap = false;
+    public void GetDirection(int dir) {
         // 1 : Y+,  2 : Y-,  3 : X+,  4 : X-,  5 : Z+,  6 : Z-
              if (dir == 1) { currentPosY++; }
         else if (dir == 2) { currentPosY--; }
@@ -223,6 +223,7 @@ public class GridPosition : MonoBehaviour {
         else if (currentPosZ < 1) { currentPosZ = 1; testScript.Instance.PVoverlap = true; return; }
 
         CombineDirection();
+        mc.BlockMoveActive(targetPos);
     }
 
     void CombineDirection() {
@@ -415,7 +416,6 @@ public class GridPosition : MonoBehaviour {
                 else if (currentPosZ == 5) { targetPos = y5x5z5; }
             }
         }
-        mc.BlockMoveActive(targetPos);
     }
 
 }
